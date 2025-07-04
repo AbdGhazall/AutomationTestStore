@@ -1,1 +1,1 @@
-"# AutomationTestStore" 
+# AutomationTestStore
