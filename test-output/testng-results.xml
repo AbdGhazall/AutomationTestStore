@@ -2,16 +2,16 @@
 <testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2025-07-04T18:46:18 AST" name="Default suite" finished-at="2025-07-04T18:46:33 AST" duration-ms="15395">
+  <suite started-at="2025-07-08T18:57:05 AST" name="Default suite" finished-at="2025-07-08T18:57:14 AST" duration-ms="9388">
     <groups>
     </groups>
-    <test started-at="2025-07-04T18:46:18 AST" name="Default test" finished-at="2025-07-04T18:46:33 AST" duration-ms="15395">
+    <test started-at="2025-07-08T18:57:05 AST" name="Default test" finished-at="2025-07-08T18:57:14 AST" duration-ms="9388">
       <class name="loginPage.myTestCases">
-        <test-method is-config="true" signature="mySetup()[pri:0, instance:loginPage.myTestCases@50ecde95]" started-at="2025-07-04T18:46:18 AST" name="mySetup" finished-at="2025-07-04T18:46:30 AST" duration-ms="12558" status="PASS">
+        <test-method is-config="true" signature="mySetup()[pri:0, instance:loginPage.myTestCases@70a36a66]" started-at="2025-07-08T18:57:05 AST" name="mySetup" finished-at="2025-07-08T18:57:07 AST" duration-ms="2671" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- mySetup -->
-        <test-method signature="Signup()[pri:1, instance:loginPage.myTestCases@50ecde95]" started-at="2025-07-04T18:46:30 AST" name="Signup" finished-at="2025-07-04T18:46:33 AST" duration-ms="2754" status="PASS">
+        <test-method signature="Signup()[pri:1, instance:loginPage.myTestCases@70a36a66]" started-at="2025-07-08T18:57:07 AST" name="Signup" finished-at="2025-07-08T18:57:14 AST" duration-ms="6657" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- Signup -->

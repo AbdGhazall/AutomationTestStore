@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.support.ui.Select;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -23,7 +24,7 @@ public class myTestCases {
 	}
 
 	@Test(priority = 1)
-	public void Signup() {
+	public void Signup() throws InterruptedException {
 		driver.navigate().to(SignupPage);
 
 		// elements
@@ -40,6 +41,11 @@ public class myTestCases {
 		WebElement loginNameInput = driver.findElement(By.id("AccountFrm_loginname"));
 		WebElement passwordInput = driver.findElement(By.id("AccountFrm_password"));
 		WebElement passwordConfirmInput = driver.findElement(By.id("AccountFrm_confirm"));
+		WebElement agreebox = driver.findElement(By.id("AccountFrm_agree"));
+		WebElement ContinueButton = driver.findElement(By.cssSelector("button[title='Continue']")); // find by css using
+																									// xpath tool
+		WebElement CountrySelect = driver.findElement(By.id("AccountFrm_country_id"));
+		WebElement StateSelect = driver.findElement(By.id("AccountFrm_zone_id"));
 
 		// data
 		// in every run change the data to something new
@@ -74,9 +80,35 @@ public class myTestCases {
 		address1Input.sendKeys(address1);
 		address2Input.sendKeys(address2);
 		cityInput.sendKeys(city);
+
+		// 3 ways with the dropdowns
+		// 1-visible data(the data that inside the option) 2- index(random index based
+		// on number of options) 3-value(option value)
+		// must use Select Class with dropdowns
+		Select mySelectForTheCountry = new Select(CountrySelect);
+
+		mySelectForTheCountry.selectByVisibleText("Jordan"); // first way
+
+		Thread.sleep(1000); // because state need time to be shown based on the country choosen
+
+		// second way
+		int numberOfOptions = StateSelect.findElements(By.tagName("option")).size();
+		System.out.println(numberOfOptions);
+//		Select mySelectForTheState = new Select(StateSelect);
+//		int randomStateIndex = rand.nextInt(1,numberOfOptions);
+//		mySelectForTheState.selectByIndex(randomStateIndex);
+
+		// third way
+		Select mySelectForTheState = new Select(StateSelect);
+		mySelectForTheState.selectByValue("1705");
+
 		PostalCodeInput.sendKeys(PostalCode);
-		loginNameInput.sendKeys(randomFirstName + randomLastName + randomNumberForTheEmail); // or store it in variable better
+		loginNameInput.sendKeys(randomFirstName + randomLastName + randomNumberForTheEmail); // or store it in variable
+																								// better
 		passwordInput.sendKeys(password);
 		passwordConfirmInput.sendKeys(password);
+
+		agreebox.click();
+		ContinueButton.click();
 	}
 }
