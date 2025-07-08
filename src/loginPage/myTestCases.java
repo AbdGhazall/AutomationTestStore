@@ -1,5 +1,6 @@
 package loginPage;
 
+import java.util.List;
 import java.util.Random;
 
 import org.openqa.selenium.By;
@@ -17,13 +18,16 @@ public class myTestCases {
 
 	Random rand = new Random(); // object for creating random numbers to be used everywhere
 
+	String TheUserName;
+	String ThePassword = "Test@1234";
+
 	@BeforeTest
 	public void mySetup() {
 		driver.get(theURL);
 		driver.manage().window().maximize();
 	}
 
-	@Test(priority = 1)
+	@Test(priority = 1, enabled = false)
 	public void Signup() throws InterruptedException {
 		driver.navigate().to(SignupPage);
 
@@ -64,13 +68,16 @@ public class myTestCases {
 		String telephone = "69657155";
 		String fax = "12344321";
 		String company = "ABC";
-		String address1 = "Amman tlaaelAli";
+		String address1 = "Amman Tabarbour";
 		String address2 = "Amman ShafaBadran";
 		String city = "Amman";
 		String PostalCode = "1212";
 		String password = "Test@1234";
 
 		// actions
+		TheUserName = randomFirstName + randomLastName + randomNumberForTheEmail; // store it in a variable to be used
+																					// in the login test
+
 		firstnameInput.sendKeys(randomFirstName);
 		lastNameInput.sendKeys(randomLastName);
 		emailInput.sendKeys(email);
@@ -81,34 +88,87 @@ public class myTestCases {
 		address2Input.sendKeys(address2);
 		cityInput.sendKeys(city);
 
-		// 3 ways with the dropdowns
-		// 1-visible data(the data that inside the option) 2- index(random index based
-		// on number of options) 3-value(option value)
+		// ## 3 ways with the dropdowns ###
+		// 1- visible data(the data that inside the option "not preferable")
+		// 2- index(random index based on number of options)
+		// 3- value(option value)
 		// must use Select Class with dropdowns
+
+		// choose country by random index based on the options
 		Select mySelectForTheCountry = new Select(CountrySelect);
-
-		mySelectForTheCountry.selectByVisibleText("Jordan"); // first way
-
+		int TotalCountries = CountrySelect.findElements(By.tagName("option")).size();
+		int randomCountry = rand.nextInt(1, TotalCountries);
+		mySelectForTheCountry.selectByIndex(randomCountry);
 		Thread.sleep(1000); // because state need time to be shown based on the country choosen
 
-		// second way
-		int numberOfOptions = StateSelect.findElements(By.tagName("option")).size();
-		System.out.println(numberOfOptions);
-//		Select mySelectForTheState = new Select(StateSelect);
-//		int randomStateIndex = rand.nextInt(1,numberOfOptions);
-//		mySelectForTheState.selectByIndex(randomStateIndex);
-
-		// third way
+		// choose state by random index
 		Select mySelectForTheState = new Select(StateSelect);
-		mySelectForTheState.selectByValue("1705");
+		int numberOfOptions = StateSelect.findElements(By.tagName("option")).size(); // total states
+		int randomStateIndex = rand.nextInt(1, numberOfOptions);
+		mySelectForTheState.selectByIndex(randomStateIndex);
+
+		// ex: choose state by value
+//		Select mySelectForTheState = new Select(StateSelect);
+//		mySelectForTheState.selectByValue("1705");
 
 		PostalCodeInput.sendKeys(PostalCode);
-		loginNameInput.sendKeys(randomFirstName + randomLastName + randomNumberForTheEmail); // or store it in variable
-																								// better
-		passwordInput.sendKeys(password);
-		passwordConfirmInput.sendKeys(password);
+		loginNameInput.sendKeys(TheUserName);
+		// better
+		passwordInput.sendKeys(ThePassword);
+		passwordConfirmInput.sendKeys(ThePassword);
 
 		agreebox.click();
-		ContinueButton.click();
+		ContinueButton.click(); // the one that in the signup form
+	}
+
+	@Test(priority = 2, enabled = false)
+	public void Logout() throws InterruptedException {
+		WebElement LogoutButton = driver.findElement(By.linkText("Logoff")); // with links <a> we take the 'title' tag
+																				// and use 'LinkText'
+		LogoutButton.click();
+		Thread.sleep(1000);
+		WebElement continueButton = driver.findElement(By.linkText("Continue"));
+		continueButton.click();
+	}
+
+	@Test(priority = 3, enabled = false)
+	public void Login() {
+		WebElement LoginAndRegisterButton = driver.findElement(By.partialLinkText("Login or register"));
+		LoginAndRegisterButton.click();
+		WebElement Loginname = driver.findElement(By.id("loginFrm_loginname"));
+		WebElement passwordInput = driver.findElement(By.id("loginFrm_password"));
+		Loginname.sendKeys(TheUserName); // the random one we have created while signUp
+		passwordInput.sendKeys(ThePassword);
+		WebElement LoginButton = driver.findElement(By.xpath("//button[@title='Login']")); // the class of this button
+																							// is not unique so we used
+																							// the Xpath tool
+		LoginButton.click();
+
+	}
+
+	@Test(priority = 4, invocationCount = 10)
+	public void AddtoCart() throws InterruptedException {
+		driver.navigate().to(theURL);
+		Thread.sleep(1000);
+		List<WebElement> theListOfItems = driver.findElements(By.className("prdocutname"));
+
+		int TotalNumberOfItems = theListOfItems.size();// 16
+
+		System.out.println(TotalNumberOfItems);
+
+		int RandomItemIndex = rand.nextInt(2); // 0-1 So it only selects one of the first two products.
+
+		theListOfItems.get(RandomItemIndex).click();
+
+		Thread.sleep(3000);
+
+		if (driver.getPageSource().contains("Out of Stock")) {
+			driver.navigate().back();
+			System.out.println("sorry the item out of the stock");
+		} else {
+			System.out.println(" the item is available");
+
+		}
+
 	}
 }
