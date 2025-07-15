@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.Select;
+import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
@@ -20,6 +21,7 @@ public class myTestCases {
 
 	String TheUserName;
 	String ThePassword = "Test@1234";
+	String firstName; // to be used with assert later to check if login test pass or not
 
 	@BeforeTest
 	public void mySetup() {
@@ -29,6 +31,7 @@ public class myTestCases {
 
 	@Test(priority = 1, enabled = false)
 	public void Signup() throws InterruptedException {
+		String ConfirmationMessage = "Your Account Has Been Created!"; // to use it in assert
 		driver.navigate().to(SignupPage);
 
 		// elements
@@ -57,6 +60,8 @@ public class myTestCases {
 		int randomIndexForFirstName = rand.nextInt(fristNames.length);
 		String randomFirstName = fristNames[randomIndexForFirstName];
 
+		firstName = randomFirstName; // to be used later
+
 		String[] lastNames = { "alaa", "saif", "abduallah", "hamzeh", "marwan", "abedalrahman", "omar" };
 		int randomIndexForLastName = rand.nextInt(lastNames.length);
 		String randomLastName = lastNames[randomIndexForLastName];
@@ -72,7 +77,6 @@ public class myTestCases {
 		String address2 = "Amman ShafaBadran";
 		String city = "Amman";
 		String PostalCode = "1212";
-		String password = "Test@1234";
 
 		// actions
 		TheUserName = randomFirstName + randomLastName + randomNumberForTheEmail; // store it in a variable to be used
@@ -88,6 +92,7 @@ public class myTestCases {
 		address2Input.sendKeys(address2);
 		cityInput.sendKeys(city);
 
+		// ---------------------------------------------------------------------------------------
 		// ## 3 ways with the dropdowns ###
 		// 1- visible data(the data that inside the option "not preferable")
 		// 2- index(random index based on number of options)
@@ -110,6 +115,7 @@ public class myTestCases {
 		// ex: choose state by value
 //		Select mySelectForTheState = new Select(StateSelect);
 //		mySelectForTheState.selectByValue("1705");
+		// ---------------------------------------------------------------------------------------
 
 		PostalCodeInput.sendKeys(PostalCode);
 		loginNameInput.sendKeys(TheUserName);
@@ -119,20 +125,40 @@ public class myTestCases {
 
 		agreebox.click();
 		ContinueButton.click(); // the one that in the signup form
+
+		Thread.sleep(3000);
+
+		boolean ActualResult = driver.getPageSource().contains(ConfirmationMessage); // if the page that after the
+																						// signUp contains this text
+
+		// ActualResult, ExpectedResult(true or false), "message"
+		Assert.assertEquals(ActualResult, true, "this is to test that the account has been created");
 	}
 
 	@Test(priority = 2, enabled = false)
 	public void Logout() throws InterruptedException {
+		String confirmationMessage = "You have been logged off your account. It is now safe to leave the computer.";
 		WebElement LogoutButton = driver.findElement(By.linkText("Logoff")); // with links <a> we take the 'title' tag
 																				// and use 'LinkText'
 		LogoutButton.click();
 		Thread.sleep(1000);
 		WebElement continueButton = driver.findElement(By.linkText("Continue"));
 		continueButton.click();
+
+		boolean ActualResult = driver.getPageSource().contains(confirmationMessage);
+		Assert.assertEquals(ActualResult, true, "this is to test that the account has logged out");
+
+		// optional
+		boolean ActualResult2 = driver.getCurrentUrl()
+				.equals("https://automationteststore.com/index.php?rt=account/logout"); // check URL if it's the same as
+																						// the current URL are they
+																						// equal or not
+		boolean expectedResult2 = true;
+		Assert.assertEquals(ActualResult2, expectedResult2);
 	}
 
 	@Test(priority = 3, enabled = false)
-	public void Login() {
+	public void Login() throws InterruptedException {
 		WebElement LoginAndRegisterButton = driver.findElement(By.partialLinkText("Login or register"));
 		LoginAndRegisterButton.click();
 		WebElement Loginname = driver.findElement(By.id("loginFrm_loginname"));
@@ -144,31 +170,59 @@ public class myTestCases {
 																							// the Xpath tool
 		LoginButton.click();
 
+		Thread.sleep(1000);
+
+		boolean ActualResult = driver.findElement(By.id("customernav")).getText().contains(firstName); // go to the nav
+																										// and get the
+																										// text inside
+																										// it and check
+																										// if it
+																										// contains the
+																										// firstName we
+																										// have store it
+																										// from the
+																										// random one
+
+		Assert.assertEquals(ActualResult, true);
+
+		// optional
+		String ActualResult2 = driver.findElement(By.id("customernav")).getText(); // the username that in the nav
+		String ExpectedResult2 = "Welcome back " + firstName; // username after login
+
+		Assert.assertEquals(ActualResult2, ExpectedResult2);
+
 	}
 
-	@Test(priority = 4, invocationCount = 10)
+	@Test(priority = 4, invocationCount = 10, enabled = false)
 	public void AddtoCart() throws InterruptedException {
 		driver.navigate().to(theURL);
 		Thread.sleep(1000);
 		List<WebElement> theListOfItems = driver.findElements(By.className("prdocutname"));
 
-		int TotalNumberOfItems = theListOfItems.size();// 16
+//		int TotalNumberOfItems = theListOfItems.size();// 16
 
-		System.out.println(TotalNumberOfItems);
-
-		int RandomItemIndex = rand.nextInt(2); // 0-1 So it only selects one of the first two products.
+		int RandomItemIndex = rand.nextInt(theListOfItems.size()); // random item from the 16
 
 		theListOfItems.get(RandomItemIndex).click();
 
 		Thread.sleep(3000);
 
-		if (driver.getPageSource().contains("Out of Stock")) {
+		WebElement AddToCartButton = driver.findElement(By.className("productpagecart"));
+
+		if (AddToCartButton.getText().equals("Out of Stock")) {
 			driver.navigate().back();
 			System.out.println("sorry the item out of the stock");
 		} else {
-			System.out.println(" the item is available");
 
+			if (driver.getCurrentUrl().contains("product_id=116")) {
+				driver.findElement(By.xpath("//label[@for='option344747']")).click();
+			}
+
+			AddToCartButton.click();
+			WebElement CheckOutButton = driver.findElement(By.linkText("Checkout"));
+			CheckOutButton.click();
 		}
 
 	}
+
 }
