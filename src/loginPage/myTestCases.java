@@ -12,6 +12,8 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+// OLD VERSION
+
 public class myTestCases {
 	WebDriver driver = new ChromeDriver();
 	String theURL = "https://automationteststore.com/"; // store the pages url better
